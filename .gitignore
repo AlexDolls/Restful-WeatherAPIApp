@@ -1,0 +1,7 @@
+db.sqlite3
+__pycache*
+*.pyc
+*.swp
+*.swo
+migrations
+!__init__.py

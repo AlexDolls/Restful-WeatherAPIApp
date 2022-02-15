@@ -1,0 +1,4 @@
+django==4.0.2
+djangorestframeword==3.13.1
+celery==5.2.3
+requests==2.27.1
