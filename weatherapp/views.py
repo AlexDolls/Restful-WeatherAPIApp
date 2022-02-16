@@ -1,5 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 import requests
 from abc import ABC, abstractmethod
@@ -156,17 +159,15 @@ class CurrentWeather(BaseAPI):
         collection = self.send()
         return self.response_formatter.execute(collection)
         
-
-
-
+@api_view()
 def get_current_weather(request):
     city = request.GET.get("city", "Kiev")
     country_code = request.GET.get("countrycode", "804")
     
     weather_api_object = CurrentWeather(GeoCording(city, country_code))
     
-    weather_info = weather_api_object.fancy_view()
+    weather_info = weather_api_object.send()
   
-    return HttpResponse(weather_info)
+    return Response(weather_info)
 
 
