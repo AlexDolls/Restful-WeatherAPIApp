@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
 
 import requests
 
@@ -161,8 +162,33 @@ class CurrentWeather(BaseAPI):
     def fancy_view(self):
         collection = self.send()
         return self.response_formatter.execute(collection)
+
+
+class AllCountriesAPI(BaseAPI):
+    
+    __country_dict = {}
+
+    @classmethod
+    def send(cls):
+        url = "https://raw.githubusercontent.com/russ666/all-countries-and-cities-json/master/countries.json"
+        if not cls.__country_dict:
+            r = requests.get(url)
+            cls.__country_dict = r.json()
+
+    @classmethod
+    def get_cities(cls, country):
+        cls.send()
+        return cls.__country_dict.get(country, "Can't find country: {}".format(country))
+
+    @classmethod
+    def get_countries(cls):
+        cls.send()
+        return cls.__country_dict.keys()
+
+
         
-@api_view()
+@api_view(['GET'])
+@parser_classes([JSONParser])   
 def get_current_weather(request):
     city = request.GET.get("city", "Kiev")
     country_code = request.GET.get("countrycode", "804")
@@ -174,3 +200,14 @@ def get_current_weather(request):
     return Response(weather_info)
 
 
+@api_view(['GET'])
+def get_countries(request):
+
+    return Response(AllCountriesAPI.get_countries())
+
+
+@api_view(['GET'])
+def get_cities(request):
+    country = request.GET.get("country")
+
+    return Response(AllCountriesAPI.get_cities(country))
