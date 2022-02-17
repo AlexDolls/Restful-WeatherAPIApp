@@ -5,7 +5,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 import requests
+
 from abc import ABC, abstractmethod
+import datetime
 
 from . import tmp_key_file
 # Create your views here.
@@ -22,29 +24,30 @@ class BaseAPI(ABC):
 
 class Cache:
     
-    def __init__(self):
+    def __init__(self, expire_time: int):
         self._cache_dict = {}
+        self._expire_time = expire_time
     
     def add(self, key: str, value: dict):
-        if not self._is_exist(key):
-            self._cache_dict[key] = value
+        self._cache_dict[key] = value
+        self._cache_dict[key]["income-date"] = datetime.datetime.now()
+
+    def get(self, key:str, request_date: datetime.datetime):
+        if item := self._cache_dict.get(key, False):
+
+            if (request_date - item["income-date"]).seconds < self._expire_time:
+                return item
+
+            else:
+                self._cache_dict.pop(key)
+
+        return False
     
     def remove(self, key: str):
         self._cache_dict.pop(key)
 
-    def get(self, key: str):
-        return self._cache_dict.get(key, False)
-
     def get_full_cache(self):
         return self._cache_dict
-
-    def _is_exist(self, key: str):
-        is_exist = self._cache_dict.get(key, False)
-
-        if is_exist:
-            return True
-
-        return False
 
 
 class WeatherCache(Cache):
@@ -122,7 +125,7 @@ class CurrentWeather(BaseAPI):
     def __init__(
                     self, 
                     geocording: GeoCording,
-                    cache: Cache = WeatherCache(),
+                    cache: Cache = WeatherCache(3600),
                     response_formatter: DictFormatting = CurrentWeatherDict()
                 ):
 
@@ -139,7 +142,7 @@ class CurrentWeather(BaseAPI):
         except AttributeError:
             print("Failed lon/lat finding...")
 
-        result = self.get_from_cache("{}-{}".format(lon, lat))
+        result = self.get_from_cache("{}-{}".format(lon, lat), datetime.datetime.now())
 
         if result == False:
             url = "http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&units=metric&appid={2}".format(lat, lon, APIkey)
@@ -149,11 +152,11 @@ class CurrentWeather(BaseAPI):
 
         return result
         
+    def get_from_cache(self, key: str, request_date: datetime.datetime):
+        return self.cache.get(key, request_date)
+
     def add_to_cache(self, key: str, value: dict):
         self.cache.add(key, value)
-
-    def get_from_cache(self, key: str):
-        return self.cache.get(key)
 
     def fancy_view(self):
         collection = self.send()
