@@ -274,15 +274,46 @@ render(){
                         "Loading..."
                 );
         } else {
-                return d(
-                        'ul',
-                        null,
-			d('li',null, "Temp: " + weather_info.main.temp),
-			d('li',null, "Temp max: " + weather_info.main.temp_max),
-			d('li',null, "Temp min: " + weather_info.main.temp_min),
-			d('li',null, "Feels like: " + weather_info.main.feels_like),
-			d('li',null, "Humitidy: " + weather_info.main.humidity),
-			d('li',null, "Pressure: " + weather_info.main.pressure)
+
+		return d(
+                       'table',
+                        {
+				className: "table",
+				id: "weather_info_list",
+				style: {width:"100%"},
+			},
+			d("thead", null,
+			d("tr", null,
+			d("th", {scope: "col"}, "Indicator"),
+			d("th", {scope: "col"}, "Value")
+			)
+			),
+			d("tbody", null,
+				d("tr", null,
+					d("td",null,"Temp"),
+					d("td", null, weather_info.main.temp + "℃")
+				),
+				 d("tr", null,
+                                        d("td",null,"Temp max"),
+                                        d("td", null, weather_info.main.temp_max + "℃")
+                                ),
+				 d("tr", null,
+                                        d("td",null,"Temp min"),
+                                        d("td", null, weather_info.main.temp_min + "℃")
+                                ),
+				 d("tr", null,
+                                        d("td",null,"Feels like"),
+                                        d("td", null, weather_info.main.feels_like + "℃")
+                                ),
+				 d("tr", null,
+                                        d("td",null,"Humidity"),
+                                        d("td", null, weather_info.main.humidity + "%")
+                                ),
+				 d("tr", null,
+                                        d("td",null,"Pressure"),
+                                        d("td", null, weather_info.main.pressure + "mm")
+                                ),
+			)
                 );
 
         }

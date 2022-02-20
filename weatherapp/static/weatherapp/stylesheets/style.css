@@ -1,3 +1,7 @@
+html, body {
+	height: 100%;
+}
+
 .box-flex {
 	display: flex;
   	align-items: center;
@@ -8,3 +12,21 @@
 .box-flex div {
 	width:300px;
 }
+
+td {
+	padding: 50px;
+}
+
+#weather_info_list .row {
+
+}
+
+body {
+	background: linear-gradient(to top left, powderblue, pink);
+	background-repeat: no-repeat;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
