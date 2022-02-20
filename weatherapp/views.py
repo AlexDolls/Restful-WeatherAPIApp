@@ -9,6 +9,7 @@ import requests
 
 from abc import ABC, abstractmethod
 import datetime
+import json
 
 from . import tmp_key_file
 # Create your views here.
@@ -54,59 +55,7 @@ class Cache:
 class WeatherCache(Cache):
     pass
                 
-
-class DictFormatting(ABC):
-
-    @abstractmethod
-    def __init__(self, entrypoint_keys: dict = {"main: Main"}):
-        self._entrypoint_keys = entrypoint_keys
-        self._match_names = {
-                          "temp":"Temperature",
-                          "feels_like":"Feels like",
-                          "temp_min": "Temp min",
-                          "temp_max": "Temp max",
-                          "pressure": "Pressure",
-                          "humidity": "Humidity"
-                        }
-
-    def execute(self, collection: dict):
-        res = ""
-
-        for entrypoint in self._entrypoint_keys:
-            entrypoint_value = collection.get(entrypoint, False)
-
-            if entrypoint_value:
-                try:
-                    if entrypoint_value.keys():
-                        for subkey in entrypoint_value.keys():
-                            matched = self._match_names.get(subkey, False)
-                            if matched:
-                                res += "{0}:{1}\n".format(matched, entrypoint_value.get(subkey))
-
-                    if not entrypoint_value.keys():
-                        res += "{0}:{1}\n".format(self._entrypoint_keys[entrypoint], entrypoint_value)
-
-                except AttributeError:
-                    res += "{0}:{1}\n".format(self._entrypoint_keys[entrypoint], entrypoint_value)
-        return res
-
-
-class CurrentWeatherDict(DictFormatting):
-
-    def __init__(self):
-        self._entrypoint_keys = {
-                                    "main":"Main",
-                                 }
-        self._match_names = {
-                          "temp":"Temperature",
-                          "feels_like":"Feels like",
-                          "temp_min": "Temp min",
-                          "temp_max": "Temp max",
-                          "pressure": "Pressure",
-                          "humidity": "Humidity",
-                        }
-
-    
+   
 class GeoCording(BaseAPI):
 
     def __init__(self, city: str, country_code: str = ""):
@@ -127,12 +76,10 @@ class CurrentWeather(BaseAPI):
                     self, 
                     geocording: GeoCording,
                     cache: Cache = WeatherCache(3600),
-                    response_formatter: DictFormatting = CurrentWeatherDict()
                 ):
 
         self.geocording = geocording
         self.cache = cache
-        self.response_formatter = response_formatter
 
     def send(self):
         coords = self.geocording.send()
@@ -158,32 +105,32 @@ class CurrentWeather(BaseAPI):
 
     def add_to_cache(self, key: str, value: dict):
         self.cache.add(key, value)
-
-    def fancy_view(self):
-        collection = self.send()
-        return self.response_formatter.execute(collection)
-
+ 
 
 class AllCountriesAPI(BaseAPI):
     
-    __country_dict = {}
+    __countries_cities_dict = {}
+    __countries = {}
 
     @classmethod
     def send(cls):
-        url = "https://raw.githubusercontent.com/russ666/all-countries-and-cities-json/master/countries.json"
-        if not cls.__country_dict:
-            r = requests.get(url)
-            cls.__country_dict = r.json()
+        if not cls.__countries_cities_dict:
+            with open("weatherapp/countries_cities.json") as f:
+                cls.__countries_cities_dict = json.load(f)
+        if not cls.__countries:
+            with open("weatherapp/countries.json") as f:
+                cls.__countries = json.load(f)
 
     @classmethod
-    def get_cities(cls, country):
+    def get_cities(cls, country: str):
         cls.send()
-        return cls.__country_dict.get(country, "Can't find country: {}".format(country))
+        return cls.__countries_cities_dict.get(country, "Can't find country: {}".format(country))
 
     @classmethod
     def get_countries(cls):
         cls.send()
-        return cls.__country_dict.keys()
+        return cls.__countries
+
 
 
         
@@ -191,7 +138,7 @@ class AllCountriesAPI(BaseAPI):
 @parser_classes([JSONParser])   
 def get_current_weather(request):
     city = request.GET.get("city", "Kiev")
-    country_code = request.GET.get("countrycode", "804")
+    country_code = request.GET.get("countrycode", "")
     
     weather_api_object = CurrentWeather(GeoCording(city, country_code))
     
@@ -211,3 +158,7 @@ def get_cities(request):
     country = request.GET.get("country")
 
     return Response(AllCountriesAPI.get_cities(country))
+
+
+def index(request):
+    return render(request, "weatherapp/index.html", {"weather_action_title":"Current Weather"})
