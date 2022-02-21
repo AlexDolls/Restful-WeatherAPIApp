@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+    web:
+      restart: always
+      build:
+        context: ./
+        dockerfile: Dockerfile.prod
+      command:  gunicorn --bind 0.0.0.0:8000 django_weather.wsgi
+      volumes:
+        - static_volume:/home/app/web/static
+      expose:
+        - 8000
+      env_file:
+        - ./.env.prod
+      depends_on:
+        - db_psql
+
+    db_psql:
+      restart: always
+      image: postgres:14.1-alpine
+      volumes:
+        - postgres_data:/postgresql/data
+      env_file:
+        - ./.env.db.prod
+    
+    nginx:
+      restart: always
+      build: ./nginx
+      volumes:
+        - static_volume:/home/app/web/static
+      ports:
+        - 1337:80
+      depends_on:
+        - web
+
+volumes:
+  postgres_data:
+  static_volume:
