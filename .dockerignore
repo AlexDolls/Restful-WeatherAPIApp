@@ -1,0 +1,7 @@
+__pycache*
+.*pyc
+*.sqlite3
+*.swo
+*.swp
+.git
+.gitignore

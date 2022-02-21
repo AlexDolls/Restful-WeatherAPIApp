@@ -1,9 +1,11 @@
 'use strict';
 
+
+const host = window.location
 const d = React.createElement;
-const countries_api_url = "http://127.0.0.1:8000/weather/countries/"
-const cities_api_url = "http://127.0.0.1:8000/weather/cities/"
-const get_current_weather_api_url = "http://127.0.0.1:8000/weather/current_weather/"
+const countries_api_url = host + "countries/"
+const cities_api_url = host + "cities/"
+const get_current_weather_api_url = host + "current_weather/"
 const get_weather_icon_url = "http://openweathermap.org/img/wn/"
 
 String.prototype.firstLetterCaps = function() {

@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  web:
+    restart: always
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - dev_app:/dev-app/
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db_psql
+
+  db_psql:
+    restart: always
+    image: postgres:14.2-alpine
+    volumes:
+      - postgres_data:/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=strongpass
+      - POSTGRES_DB=django_db
+
+volumes:
+  dev_app:
+  postgres_data:
