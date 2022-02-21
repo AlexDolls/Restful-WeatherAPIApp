@@ -4,6 +4,11 @@ const d = React.createElement;
 const countries_api_url = "http://127.0.0.1:8000/weather/countries/"
 const cities_api_url = "http://127.0.0.1:8000/weather/cities/"
 const get_current_weather_api_url = "http://127.0.0.1:8000/weather/current_weather/"
+const get_weather_icon_url = "http://openweathermap.org/img/wn/"
+
+String.prototype.firstLetterCaps = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
 
 class PopCountryList extends React.Component {
   constructor(props) {
@@ -274,47 +279,60 @@ render(){
                         "Loading..."
                 );
         } else {
-
 		return d(
-                       'table',
-                        {
-				className: "table",
-				id: "weather_info_list",
-				style: {width:"100%"},
-			},
-			d("thead", null,
-			d("tr", null,
-			d("th", {scope: "col"}, "Indicator"),
-			d("th", {scope: "col"}, "Value")
-			)
-			),
-			d("tbody", null,
-				d("tr", null,
-					d("td",null,"Temp"),
-					d("td", null, weather_info.main.temp + "℃")
+			"div",
+			null,
+			d("div", {className: "container"}, 
+				d("div", {className: "row", style:{textAlign: "center"}},
+					d("div", {className: "col"}, 
+						d("img", {src:get_weather_icon_url + weather_info.weather[0].icon + "@2x.png"}),
+						d("strong", null, weather_info.main.temp + "℃")
+					)
 				),
-				 d("tr", null,
-                                        d("td",null,"Temp max"),
-                                        d("td", null, weather_info.main.temp_max + "℃")
+				d("div", {className: "row", style:{textAlign: "center"}},
+					d(
+						"div", 
+						{className:"col"},
+						"Feels like ",
+						d(
+							"strong",
+							null,
+							`${weather_info.main.feels_like}℃ `,
+							d(
+								"p", 
+								null,
+								`${weather_info.weather[0].description.firstLetterCaps()}`
+							)
+						)
+					)
+				),
+				d("hr", null),
+				d("div", {className: "row"},
+                                        d("div", {className: "col", style: {textAlign: "left"}},
+						"Humitidy: ",
+                                                d("strong", null, weather_info.main.humidity + "%")
+					),
+					d("div", {className: "col", style:{textAlign: "right"}},
+                                                "Visibility: ",
+                                                d("strong", null, (parseFloat(weather_info.visibility)/1000).toFixed(1)),
+						"km"
+                                        )
                                 ),
-				 d("tr", null,
-                                        d("td",null,"Temp min"),
-                                        d("td", null, weather_info.main.temp_min + "℃")
-                                ),
-				 d("tr", null,
-                                        d("td",null,"Feels like"),
-                                        d("td", null, weather_info.main.feels_like + "℃")
-                                ),
-				 d("tr", null,
-                                        d("td",null,"Humidity"),
-                                        d("td", null, weather_info.main.humidity + "%")
-                                ),
-				 d("tr", null,
-                                        d("td",null,"Pressure"),
-                                        d("td", null, weather_info.main.pressure + "mm")
-                                ),
+				d("p", null),
+				d("div", {className: "row"},
+                                        d("div", {className: "col", style:{textAlign: "center"}},
+                                                "Pressure: ",
+                                                d("strong", null, weather_info.main.pressure),
+						"hPa",
+						d("p", null, "Wind: ",
+                                                d("strong", null, weather_info.wind.speed),
+						"m/s"
+						)
+                                        )
+                                )
+
 			)
-                );
+		);
 
         }
 	
