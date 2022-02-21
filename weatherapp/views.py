@@ -115,10 +115,10 @@ class AllCountriesAPI(BaseAPI):
     @classmethod
     def send(cls):
         if not cls.__countries_cities_dict:
-            with open("weatherapp/countries_cities.json") as f:
+            with open("weatherapp/static/weatherapp/files/json/countries_cities.json") as f:
                 cls.__countries_cities_dict = json.load(f)
         if not cls.__countries:
-            with open("weatherapp/countries.json") as f:
+            with open("weatherapp/static/weatherapp/files/json/countries.json") as f:
                 cls.__countries = json.load(f)
 
     @classmethod
