@@ -6,7 +6,7 @@ services:
     build: .
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - dev_app:/dev-app/
+      - ./:/dev-app/
     ports:
       - 8000:8000
     env_file:
@@ -25,5 +25,4 @@ services:
       - POSTGRES_DB=django_db
 
 volumes:
-  dev_app:
   postgres_data:
