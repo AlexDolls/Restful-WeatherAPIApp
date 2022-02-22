@@ -6,7 +6,7 @@
 <a href = "https://reactjs.org/"><img src = "https://img.shields.io/badge/React-17.0.2-blue"></img></a>
 </p>
 <p align = center>
-<img src = "https://imgur.com/4uewx6i.jpeg"><img>
+<a href = "http://vps-39294.vps-default-host.net/weatherapp/"><img src = "https://imgur.com/4uewx6i.jpeg"><img></a>
 <h2 align = "center"><strong><a href = "http://vps-39294.vps-default-host.net/weatherapp/">Try it in Live Version</a></strong></h2>
 </p>
 
