@@ -7,7 +7,7 @@
 </p>
 <p align = center>
 <a href = "http://vps-39294.vps-default-host.net/weatherapp/"><img src = "https://imgur.com/4uewx6i.jpeg"><img></a>
-<h2 align = "center"><strong><a href = "http://vps-39294.vps-default-host.net/weatherapp/">Try it in Live Version</a></strong></h2>
+<h2 align = "center"><strong><a href = "http://vps-39294.vps-default-host.net/weatherapp/">Try it in Live Version (Not active now)</a></strong></h2>
 </p>
 
 <h2>Technologies used in project</h2>
